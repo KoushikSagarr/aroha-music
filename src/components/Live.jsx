@@ -1,6 +1,5 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
-import { searchSongs } from '../data/songDatabase'
+import { useRef, useState, useEffect, useCallback } from 'react'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
@@ -8,6 +7,21 @@ const tipAmounts = [
     { value: 200, label: '₹200' },
     { value: 500, label: '₹500' },
 ]
+
+// Debounce helper
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value)
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value)
+        }, delay)
+
+        return () => clearTimeout(handler)
+    }, [value, delay])
+
+    return debouncedValue
+}
 
 const Live = () => {
     const ref = useRef(null)
@@ -21,27 +35,68 @@ const Live = () => {
     const [isRequesting, setIsRequesting] = useState(false)
     const [requestSuccess, setRequestSuccess] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
+    const [isSearching, setIsSearching] = useState(false)
 
     // Tip State
     const [selectedTip, setSelectedTip] = useState(null)
     const [customTip, setCustomTip] = useState('')
     const [showQR, setShowQR] = useState(false)
 
-    // Search songs as user types
-    useEffect(() => {
-        if (songQuery.length >= 2) {
-            const results = searchSongs(songQuery)
-            setSuggestions(results)
-            setShowDropdown(results.length > 0)
-        } else {
+    // Debounce search query
+    const debouncedQuery = useDebounce(songQuery, 400)
+
+    // Search songs using iTunes API
+    const searchSongs = useCallback(async (query) => {
+        if (query.length < 2) {
             setSuggestions([])
             setShowDropdown(false)
+            return
         }
-    }, [songQuery])
+
+        setIsSearching(true)
+
+        try {
+            // iTunes Search API - works without API key
+            // Searches across all languages including Hindi, Telugu, English
+            const response = await fetch(
+                `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=10`
+            )
+
+            if (!response.ok) throw new Error('Search failed')
+
+            const data = await response.json()
+
+            // Transform iTunes results to our format
+            const songs = data.results.map((track, index) => ({
+                id: track.trackId || index,
+                title: track.trackName,
+                artist: track.artistName,
+                album: track.collectionName || 'Single',
+                artwork: track.artworkUrl100?.replace('100x100', '200x200'),
+                previewUrl: track.previewUrl,
+                year: track.releaseDate ? new Date(track.releaseDate).getFullYear() : '',
+            }))
+
+            setSuggestions(songs)
+            setShowDropdown(songs.length > 0)
+        } catch (error) {
+            console.error('Song search error:', error)
+            setSuggestions([])
+        } finally {
+            setIsSearching(false)
+        }
+    }, [])
+
+    // Trigger search when debounced query changes
+    useEffect(() => {
+        if (debouncedQuery && !selectedSong) {
+            searchSongs(debouncedQuery)
+        }
+    }, [debouncedQuery, selectedSong, searchSongs])
 
     const handleSongSelect = (song) => {
         setSelectedSong(song)
-        setSongQuery(`${song.title} - ${song.movie}`)
+        setSongQuery(`${song.title} - ${song.artist}`)
         setShowDropdown(false)
     }
 
@@ -115,7 +170,7 @@ const Live = () => {
                 >
                     <span className="section-tag">🎤 We're Live!</span>
                     <h2 className="section-title">Join The Party</h2>
-                    <p className="section-subtitle">Request your favorite song & support the band</p>
+                    <p className="section-subtitle">Request any song from millions across Hindi, English, Telugu & more</p>
                 </motion.div>
 
                 <div className="live-grid">
@@ -136,7 +191,7 @@ const Live = () => {
                         </div>
 
                         <p className="card-desc">
-                            Type a song name, movie, or artist — we'll try to play it for you!
+                            Search any song — Bollywood, Hollywood, Telugu, Tamil, Punjabi & more!
                         </p>
 
                         <form onSubmit={handleSongRequest} className="song-request-form">
@@ -149,15 +204,20 @@ const Live = () => {
                                             setSongQuery(e.target.value)
                                             setSelectedSong(null)
                                         }}
-                                        placeholder="Search for a song..."
+                                        placeholder="Search for any song..."
                                         className="song-search-input"
-                                        onFocus={() => songQuery.length >= 2 && setShowDropdown(true)}
+                                        onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+                                        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                                     />
                                     <div className="search-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <circle cx="11" cy="11" r="8" />
-                                            <path d="m21 21-4.35-4.35" />
-                                        </svg>
+                                        {isSearching ? (
+                                            <span className="search-spinner"></span>
+                                        ) : (
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <circle cx="11" cy="11" r="8" />
+                                                <path d="m21 21-4.35-4.35" />
+                                            </svg>
+                                        )}
                                     </div>
                                 </div>
 
@@ -177,10 +237,17 @@ const Live = () => {
                                                     onClick={() => handleSongSelect(song)}
                                                     whileHover={{ backgroundColor: 'rgba(232, 168, 124, 0.1)' }}
                                                 >
+                                                    {song.artwork && (
+                                                        <img
+                                                            src={song.artwork}
+                                                            alt={song.title}
+                                                            className="suggestion-artwork"
+                                                        />
+                                                    )}
                                                     <div className="suggestion-info">
                                                         <span className="suggestion-title">{song.title}</span>
                                                         <span className="suggestion-meta">
-                                                            {song.movie} ({song.year}) • {song.artist}
+                                                            {song.artist} {song.album !== 'Single' && `• ${song.album}`} {song.year && `(${song.year})`}
                                                         </span>
                                                     </div>
                                                     <span className="suggestion-arrow">→</span>

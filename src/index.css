@@ -1289,6 +1289,15 @@ img {
   color: var(--gray-600);
 }
 
+.search-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-300);
+  border-top-color: var(--coral);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 .suggestions-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -1298,7 +1307,7 @@ img {
   border-radius: 1rem;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--gray-200);
-  max-height: 320px;
+  max-height: 400px;
   overflow-y: auto;
   z-index: 100;
 }
@@ -1306,15 +1315,24 @@ img {
 .suggestion-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1rem;
   border: none;
   background: none;
   cursor: pointer;
   transition: var(--transition-fast);
   text-align: left;
   font-family: var(--font-body);
+}
+
+.suggestion-artwork {
+  width: 50px;
+  height: 50px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .suggestion-item:hover {
@@ -1326,9 +1344,11 @@ img {
 }
 
 .suggestion-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .suggestion-title {
