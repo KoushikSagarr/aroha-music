@@ -220,7 +220,7 @@ const Live = () => {
                                         placeholder="Search for any song..."
                                         className="song-search-input"
                                         onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
-                                        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                                        onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
                                     />
                                     <div className="search-icon">
                                         {isSearching ? (
