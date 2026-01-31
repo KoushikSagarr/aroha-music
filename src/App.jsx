@@ -9,6 +9,7 @@ import About from './components/About'
 import Band from './components/Band'
 import Music from './components/Music'
 import Venues from './components/Venues'
+import Live from './components/Live'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
@@ -40,6 +41,7 @@ function App() {
             <Band />
             <Music />
             <Venues />
+            <Live />
             <Contact />
           </main>
           <Footer />

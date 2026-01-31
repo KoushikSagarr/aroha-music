@@ -1,8 +1,16 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState } from 'react'
+import emailjs from '@emailjs/browser'
+
+// EmailJS Configuration - Replace these with your actual values
+// Get them from https://www.emailjs.com/
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'  // Replace with your EmailJS service ID
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID' // Replace with your EmailJS template ID
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'   // Replace with your EmailJS public key
 
 const Contact = () => {
     const ref = useRef(null)
+    const formRef = useRef(null)
     const isInView = useInView(ref, { once: true, margin: '-100px' })
     const [formState, setFormState] = useState({
         name: '',
@@ -13,26 +21,57 @@ const Contact = () => {
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [error, setError] = useState(null)
 
     const handleChange = (e) => {
         setFormState({ ...formState, [e.target.name]: e.target.value })
+        setError(null)
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setIsSubmitting(true)
+        setError(null)
 
-        // Simulate form submission
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        try {
+            // EmailJS template parameters
+            const templateParams = {
+                from_name: formState.name,
+                from_email: formState.email,
+                phone: formState.phone || 'Not provided',
+                event_type: formState.eventType,
+                message: formState.message,
+                to_email: 'band@arohamusic.com', // Replace with actual band email
+            }
 
-        setIsSubmitting(false)
-        setIsSubmitted(true)
+            // Check if EmailJS is properly configured
+            if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+                // Fallback: simulate success for demo
+                console.log('EmailJS not configured. Form data:', templateParams)
+                await new Promise((resolve) => setTimeout(resolve, 1500))
+            } else {
+                // Send email via EmailJS
+                await emailjs.send(
+                    EMAILJS_SERVICE_ID,
+                    EMAILJS_TEMPLATE_ID,
+                    templateParams,
+                    EMAILJS_PUBLIC_KEY
+                )
+            }
 
-        // Reset after showing success
-        setTimeout(() => {
-            setIsSubmitted(false)
-            setFormState({ name: '', email: '', phone: '', eventType: '', message: '' })
-        }, 3000)
+            setIsSubmitting(false)
+            setIsSubmitted(true)
+
+            // Reset after showing success
+            setTimeout(() => {
+                setIsSubmitted(false)
+                setFormState({ name: '', email: '', phone: '', eventType: '', message: '' })
+            }, 3000)
+        } catch (err) {
+            console.error('Email send error:', err)
+            setIsSubmitting(false)
+            setError('Failed to send message. Please try again or email us directly.')
+        }
     }
 
     return (
