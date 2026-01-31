@@ -10,6 +10,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore'
+import CustomCursor from './CustomCursor'
 
 // Admin credentials - change these!
 const ADMIN_CREDENTIALS = {
@@ -88,6 +89,7 @@ const AdminPage = () => {
     if (!isLoggedIn) {
         return (
             <div className="admin-page">
+                <CustomCursor />
                 <motion.div
                     className="login-container"
                     initial={{ opacity: 0, y: 20 }}
@@ -144,6 +146,7 @@ const AdminPage = () => {
     // Admin Dashboard
     return (
         <div className="admin-page">
+            <CustomCursor />
             <div className="admin-header">
                 <div className="admin-title">
                     <h1>🎤 Song Requests</h1>
