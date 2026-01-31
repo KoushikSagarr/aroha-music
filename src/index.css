@@ -3069,3 +3069,347 @@ img {
 .action-btn.delete-btn:hover {
   background: rgba(255, 100, 100, 0.3);
 }
+
+/* ==========================================================================
+   ADMIN PAGE
+   ========================================================================== */
+
+.admin-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: var(--white);
+  font-family: var(--font-body);
+  padding: 1rem;
+}
+
+/* Login Screen */
+.login-container {
+  max-width: 380px;
+  margin: 0 auto;
+  padding-top: 15vh;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.login-header h1 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.login-header p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.login-field {
+  margin-bottom: 1.25rem;
+}
+
+.login-field label {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  transition: all 0.2s ease;
+}
+
+.login-field input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: var(--coral);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.login-error {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6b6b;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--coral);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.login-btn:hover {
+  background: var(--coral-light);
+  transform: translateY(-1px);
+}
+
+/* Admin Dashboard */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.admin-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-title h1 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.pending-badge {
+  background: var(--coral);
+  padding: 0.375rem 0.875rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.logout-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.admin-loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-empty span:first-child {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.admin-empty p {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-empty .hint {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+/* Request Cards */
+.admin-requests {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.admin-request-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 4px solid var(--coral);
+}
+
+.admin-request-card.playing {
+  border-left-color: var(--teal);
+  background: rgba(126, 206, 197, 0.1);
+}
+
+.admin-request-card.played {
+  border-left-color: var(--gray-600);
+  opacity: 0.5;
+}
+
+.admin-request-card.expanded {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.request-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+.request-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--coral);
+  flex-shrink: 0;
+}
+
+.admin-request-card.playing .request-status-dot {
+  background: var(--teal);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.admin-request-card.played .request-status-dot {
+  background: var(--gray-600);
+}
+
+.request-art {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.request-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.125rem;
+}
+
+.requester {
+  font-size: 0.75rem;
+  color: var(--teal-light);
+  flex-shrink: 0;
+}
+
+.tap-hint {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.25rem;
+}
+
+/* Request Options */
+.request-options {
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.option-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.option-btn.playing {
+  background: var(--teal);
+  color: var(--gray-900);
+}
+
+.option-btn.done {
+  background: var(--coral);
+  color: var(--white);
+}
+
+.option-btn.pending {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+}
+
+.option-btn.delete {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6b6b;
+}
+
+.admin-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+}

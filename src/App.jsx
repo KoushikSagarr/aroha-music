@@ -12,7 +12,7 @@ import Venues from './components/Venues'
 import Live from './components/Live'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
-import Backstage from './components/Backstage'
+import AdminPage from './components/AdminPage'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -22,9 +22,9 @@ function App() {
     // Simple hash-based routing
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1) // Remove the #
-      if (hash === 'backstage') {
-        setCurrentPage('backstage')
-        setLoading(false) // Skip loader for backstage
+      if (hash === 'admin') {
+        setCurrentPage('admin')
+        setLoading(false) // Skip loader for admin
       } else {
         setCurrentPage('home')
       }
@@ -39,7 +39,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    // Only show loader for home page, not backstage
+    // Only show loader for home page
     if (currentPage === 'home' && loading) {
       const timer = setTimeout(() => {
         setLoading(false)
@@ -48,9 +48,9 @@ function App() {
     }
   }, [currentPage, loading])
 
-  // Backstage page (for band members)
-  if (currentPage === 'backstage') {
-    return <Backstage />
+  // Admin page (protected with login)
+  if (currentPage === 'admin') {
+    return <AdminPage />
   }
 
   // Main website

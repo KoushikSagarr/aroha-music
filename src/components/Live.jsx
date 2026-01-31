@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { addSongRequest } from './Backstage'
+import { addSongRequest } from '../services/songService'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
