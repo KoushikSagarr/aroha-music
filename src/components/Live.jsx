@@ -423,6 +423,19 @@ const Live = () => {
                         </AnimatePresence>
                     </motion.div>
                 </div>
+
+                {/* Admin Access Link */}
+                <motion.div
+                    className="admin-access"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : {}}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                    <a href="#admin" className="admin-link">
+                        <span>🎸</span>
+                        <span>Band Member?</span>
+                    </a>
+                </motion.div>
             </div>
         </section>
     )

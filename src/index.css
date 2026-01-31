@@ -1609,6 +1609,40 @@ img {
   }
 }
 
+/* Admin Access Link */
+.admin-access {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.06) 100%);
+  border-radius: 2rem;
+  color: var(--gray-500);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.admin-link:hover {
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-light) 100%);
+  color: var(--white);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(232, 168, 124, 0.3);
+}
+
+.admin-link span:first-child {
+  font-size: 1.1rem;
+}
+
 /* ==========================================================================
    CONTACT SECTION
    ========================================================================== */
