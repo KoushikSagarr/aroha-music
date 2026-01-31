@@ -213,36 +213,30 @@ img {
 }
 
 /* ==========================================================================
-   CUSTOM CURSOR
+   CUSTOM CURSOR - Vinyl Disc Theme
    ========================================================================== */
 
-.cursor-dot,
-.cursor-outline {
+.cursor-vinyl {
   position: fixed;
   pointer-events: none;
   z-index: 10000;
-  border-radius: 50%;
+  mix-blend-mode: difference;
 }
 
-.cursor-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--coral);
-}
-
-.cursor-outline {
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--coral);
-  background: transparent;
-  opacity: 0.5;
+.cursor-vinyl svg {
+  display: block;
 }
 
 @media (max-width: 768px) {
-
-  .cursor-dot,
-  .cursor-outline {
+  .cursor-vinyl {
     display: none;
+  }
+}
+
+/* Hide default cursor on desktop */
+@media (hover: hover) {
+  * {
+    cursor: none !important;
   }
 }
 
@@ -1290,9 +1284,10 @@ img {
 }
 
 .search-icon svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   color: var(--gray-500);
+  stroke-width: 2.5;
 }
 
 .search-spinner {
