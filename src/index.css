@@ -426,8 +426,24 @@ img {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: var(--gradient-hero);
+  background: linear-gradient(-45deg, #7ECEC5, #A8DDD7, #E8A87C, #88D8C0, #F0C4A8);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   overflow: hidden;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .hero-bg {
@@ -1145,9 +1161,25 @@ img {
 
 .live {
   padding: var(--section-padding) 0;
-  background: linear-gradient(180deg, var(--cream) 0%, var(--peach) 50%, var(--coral-light) 100%);
+  background: linear-gradient(-45deg, #FFF8F0, #FFCBA4, #F0C4A8, #FFE4D6, #FFEEE4);
+  background-size: 400% 400%;
+  animation: liveGradient 20s ease infinite;
   position: relative;
   overflow: hidden;
+}
+
+@keyframes liveGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .live::before {
@@ -1255,7 +1287,7 @@ img {
 
 .song-search-input {
   width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
+  padding: 1rem 3rem 1rem 1rem;
   border: 2px solid var(--gray-200);
   border-radius: 1rem;
   font-size: 1rem;
@@ -1272,22 +1304,24 @@ img {
 
 .search-icon {
   position: absolute;
-  left: 1rem;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  color: var(--gray-400);
 }
 
 .search-icon svg {
-  width: 18px;
-  height: 18px;
-  color: var(--gray-500);
-  stroke-width: 2.5;
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
 }
 
 .search-spinner {
@@ -1306,11 +1340,11 @@ img {
   right: 0;
   background: var(--white);
   border-radius: 1rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   border: 1px solid var(--gray-200);
-  max-height: 400px;
+  max-height: 60vh;
   overflow-y: auto;
-  z-index: 100;
+  z-index: 9999;
 }
 
 .suggestion-item {
