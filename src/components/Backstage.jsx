@@ -1,209 +1,205 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { db } from '../firebase'
+import {
+    collection,
+    addDoc,
+    onSnapshot,
+    updateDoc,
+    deleteDoc,
+    doc,
+    query,
+    orderBy,
+    serverTimestamp
+} from 'firebase/firestore'
 
-// Simple in-memory store for song requests (shared across components)
-// In production, you'd use Firebase, Supabase, or a backend API
-export const songRequestStore = {
-    requests: [],
-    listeners: new Set(),
+// Collection reference
+const requestsRef = collection(db, 'songRequests')
 
-    addRequest(request) {
-        this.requests.unshift({
-            ...request,
-            id: Date.now(),
-            timestamp: new Date().toISOString(),
-            status: 'pending'
-        })
-        this.notify()
-    },
-
-    updateStatus(id, status) {
-        const request = this.requests.find(r => r.id === id)
-        if (request) {
-            request.status = status
-            this.notify()
-        }
-    },
-
-    clearCompleted() {
-        this.requests = this.requests.filter(r => r.status !== 'played')
-        this.notify()
-    },
-
-    subscribe(listener) {
-        this.listeners.add(listener)
-        return () => this.listeners.delete(listener)
-    },
-
-    notify() {
-        this.listeners.forEach(listener => listener([...this.requests]))
-    }
+// Export function to add request (used by Live component)
+export const addSongRequest = async (request) => {
+    await addDoc(requestsRef, {
+        ...request,
+        status: 'pending',
+        createdAt: serverTimestamp()
+    })
 }
 
 const Backstage = () => {
     const [requests, setRequests] = useState([])
-    const [filter, setFilter] = useState('all') // all, pending, playing, played
+    const [selectedId, setSelectedId] = useState(null)
+    const [loading, setLoading] = useState(true)
 
+    // Subscribe to real-time updates from Firestore
     useEffect(() => {
-        // Subscribe to request updates
-        const unsubscribe = songRequestStore.subscribe(setRequests)
-        setRequests([...songRequestStore.requests])
-        return unsubscribe
+        const q = query(requestsRef, orderBy('createdAt', 'desc'))
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const reqs = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data().createdAt?.toDate() || new Date()
+            }))
+            setRequests(reqs)
+            setLoading(false)
+        })
+
+        return () => unsubscribe()
     }, [])
 
-    const filteredRequests = requests.filter(req => {
-        if (filter === 'all') return true
-        return req.status === filter
-    })
-
-    const handleStatusChange = (id, newStatus) => {
-        songRequestStore.updateStatus(id, newStatus)
+    const updateStatus = async (id, status) => {
+        await updateDoc(doc(db, 'songRequests', id), { status })
+        setSelectedId(null)
     }
 
-    const getStatusColor = (status) => {
+    const deleteRequest = async (id) => {
+        await deleteDoc(doc(db, 'songRequests', id))
+        setSelectedId(null)
+    }
+
+    const pendingCount = requests.filter(r => r.status === 'pending').length
+    const playingCount = requests.filter(r => r.status === 'playing').length
+
+    const getStatusStyle = (status) => {
         switch (status) {
-            case 'pending': return '#E8A87C'
-            case 'playing': return '#7ECEC5'
-            case 'played': return '#88D8C0'
-            default: return '#888'
+            case 'pending': return { bg: '#E8A87C', text: '⏳' }
+            case 'playing': return { bg: '#7ECEC5', text: '🎵' }
+            case 'played': return { bg: '#88D8C0', text: '✅' }
+            default: return { bg: '#888', text: '•' }
         }
     }
 
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'pending': return '⏳'
-            case 'playing': return '🎵'
-            case 'played': return '✅'
-            default: return '•'
-        }
+    if (loading) {
+        return (
+            <div className="backstage">
+                <div className="backstage-loading">
+                    <span className="loading-icon">🎸</span>
+                    <p>Loading requests...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
         <div className="backstage">
             <div className="backstage-header">
-                <div className="backstage-title">
-                    <h1>🎤 Song Requests</h1>
-                    <span className="request-count">{requests.filter(r => r.status === 'pending').length} pending</span>
+                <h1>🎤 Song Requests</h1>
+                <div className="backstage-stats">
+                    {pendingCount > 0 && (
+                        <span className="stat pending">{pendingCount} pending</span>
+                    )}
+                    {playingCount > 0 && (
+                        <span className="stat playing">{playingCount} playing</span>
+                    )}
                 </div>
-                <p className="backstage-subtitle">Live requests from your audience</p>
-            </div>
-
-            <div className="backstage-filters">
-                {['all', 'pending', 'playing', 'played'].map((f) => (
-                    <button
-                        key={f}
-                        className={`filter-btn ${filter === f ? 'active' : ''}`}
-                        onClick={() => setFilter(f)}
-                    >
-                        {f === 'all' ? '📋 All' :
-                            f === 'pending' ? '⏳ Pending' :
-                                f === 'playing' ? '🎵 Playing' : '✅ Played'}
-                    </button>
-                ))}
             </div>
 
             <div className="requests-list">
                 <AnimatePresence>
-                    {filteredRequests.length === 0 ? (
+                    {requests.length === 0 ? (
                         <motion.div
                             className="empty-state"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                         >
-                            <span className="empty-icon">🎸</span>
-                            <p>No song requests yet</p>
-                            <span className="empty-hint">Requests will appear here in real-time</span>
+                            <span className="empty-icon">🎵</span>
+                            <p>No requests yet</p>
+                            <span className="empty-hint">Audience requests will appear here</span>
                         </motion.div>
                     ) : (
-                        filteredRequests.map((request, index) => (
+                        requests.map((request) => (
                             <motion.div
                                 key={request.id}
-                                className="request-card"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                transition={{ delay: index * 0.05 }}
-                                style={{
-                                    borderLeft: `4px solid ${getStatusColor(request.status)}`,
-                                    opacity: request.status === 'played' ? 0.6 : 1
-                                }}
+                                className={`request-item ${request.status} ${selectedId === request.id ? 'selected' : ''}`}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, x: -100 }}
+                                onClick={() => setSelectedId(selectedId === request.id ? null : request.id)}
+                                layout
                             >
-                                <div className="request-main">
+                                <div className="request-row">
+                                    <span className="request-status-icon">
+                                        {getStatusStyle(request.status).text}
+                                    </span>
+
                                     {request.artwork && (
                                         <img
                                             src={request.artwork}
-                                            alt={request.song}
-                                            className="request-artwork"
+                                            alt=""
+                                            className="request-thumb"
                                         />
                                     )}
-                                    <div className="request-info">
-                                        <h3 className="request-song">{request.song}</h3>
-                                        <p className="request-artist">{request.artist}</p>
-                                        {request.fanName && (
-                                            <span className="request-from">
-                                                Requested by <strong>{request.fanName}</strong>
-                                            </span>
-                                        )}
+
+                                    <div className="request-details">
+                                        <span className="request-song-name">{request.song}</span>
+                                        <span className="request-artist-name">{request.artist}</span>
                                     </div>
-                                    <span className="request-status-badge">
-                                        {getStatusIcon(request.status)}
-                                    </span>
+
+                                    {request.fanName && request.fanName !== 'Anonymous' && (
+                                        <span className="request-fan">🙋 {request.fanName}</span>
+                                    )}
                                 </div>
 
-                                <div className="request-actions">
-                                    {request.status === 'pending' && (
-                                        <>
-                                            <button
-                                                className="action-btn play-btn"
-                                                onClick={() => handleStatusChange(request.id, 'playing')}
-                                            >
-                                                🎵 Now Playing
-                                            </button>
-                                            <button
-                                                className="action-btn skip-btn"
-                                                onClick={() => handleStatusChange(request.id, 'played')}
-                                            >
-                                                ⏭️ Skip
-                                            </button>
-                                        </>
-                                    )}
-                                    {request.status === 'playing' && (
-                                        <button
-                                            className="action-btn done-btn"
-                                            onClick={() => handleStatusChange(request.id, 'played')}
+                                <AnimatePresence>
+                                    {selectedId === request.id && (
+                                        <motion.div
+                                            className="request-actions-panel"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
                                         >
-                                            ✅ Done
-                                        </button>
+                                            <div className="action-buttons">
+                                                {request.status === 'pending' && (
+                                                    <>
+                                                        <button
+                                                            className="action-btn now-playing"
+                                                            onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'playing') }}
+                                                        >
+                                                            🎵 Now Playing
+                                                        </button>
+                                                        <button
+                                                            className="action-btn mark-done"
+                                                            onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'played') }}
+                                                        >
+                                                            ✅ Done
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {request.status === 'playing' && (
+                                                    <button
+                                                        className="action-btn mark-done"
+                                                        onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'played') }}
+                                                    >
+                                                        ✅ Finished
+                                                    </button>
+                                                )}
+                                                {request.status === 'played' && (
+                                                    <button
+                                                        className="action-btn pending-again"
+                                                        onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'pending') }}
+                                                    >
+                                                        🔄 Play Again
+                                                    </button>
+                                                )}
+                                                <button
+                                                    className="action-btn delete-btn"
+                                                    onClick={(e) => { e.stopPropagation(); deleteRequest(request.id) }}
+                                                >
+                                                    🗑️ Remove
+                                                </button>
+                                            </div>
+                                        </motion.div>
                                     )}
-                                    {request.status === 'played' && (
-                                        <span className="played-label">Completed</span>
-                                    )}
-                                </div>
-
-                                <span className="request-time">
-                                    {new Date(request.timestamp).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </span>
+                                </AnimatePresence>
                             </motion.div>
                         ))
                     )}
                 </AnimatePresence>
             </div>
 
-            {requests.some(r => r.status === 'played') && (
-                <button
-                    className="clear-btn"
-                    onClick={() => songRequestStore.clearCompleted()}
-                >
-                    🗑️ Clear Completed
-                </button>
-            )}
-
             <div className="backstage-footer">
-                <p>Open this page on a tablet near the stage 📱</p>
-                <span className="backstage-url">{window.location.origin}/backstage</span>
+                <p>📱 Keep this open on your tablet near the stage</p>
+                <span className="sync-status">🟢 Live sync enabled</span>
             </div>
         </div>
     )

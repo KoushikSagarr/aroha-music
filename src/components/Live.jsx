@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { songRequestStore } from './Backstage'
+import { addSongRequest } from './Backstage'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
@@ -107,28 +107,31 @@ const Live = () => {
 
         setIsRequesting(true)
 
-        // Add request to the store for backstage dashboard
-        songRequestStore.addRequest({
-            song: selectedSong?.title || songQuery,
-            artist: selectedSong?.artist || 'Custom Request',
-            album: selectedSong?.album || '',
-            artwork: selectedSong?.artwork || null,
-            fanName: fanName || 'Anonymous',
-        })
+        try {
+            // Add request to Firebase for backstage dashboard
+            await addSongRequest({
+                song: selectedSong?.title || songQuery,
+                artist: selectedSong?.artist || 'Custom Request',
+                album: selectedSong?.album || '',
+                artwork: selectedSong?.artwork || null,
+                fanName: fanName || 'Anonymous',
+            })
 
-        // Brief delay for UX
-        await new Promise((resolve) => setTimeout(resolve, 800))
+            setIsRequesting(false)
+            setRequestSuccess(true)
 
-        setIsRequesting(false)
-        setRequestSuccess(true)
-
-        // Reset after showing success
-        setTimeout(() => {
-            setRequestSuccess(false)
-            setSongQuery('')
-            setSelectedSong(null)
-            setFanName('')
-        }, 3000)
+            // Reset after showing success
+            setTimeout(() => {
+                setRequestSuccess(false)
+                setSongQuery('')
+                setSelectedSong(null)
+                setFanName('')
+            }, 3000)
+        } catch (error) {
+            console.error('Error submitting request:', error)
+            setIsRequesting(false)
+            alert('Failed to submit request. Please try again.')
+        }
     }
 
     const handleTipSelect = (amount) => {

@@ -2870,12 +2870,202 @@ img {
   font-size: 0.875rem;
 }
 
-.backstage-url {
-  display: block;
-  margin-top: 0.5rem;
-  font-family: monospace;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
+.backstage-footer p {
+  margin-bottom: 0.5rem;
+}
+
+.sync-status {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Backstage Stats */
+.backstage-stats {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat {
+  padding: 0.375rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.stat.pending {
+  background: var(--coral);
+}
+
+.stat.playing {
+  background: var(--teal);
+  color: var(--gray-900);
+}
+
+/* Backstage Loading */
+.backstage-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.loading-icon {
+  font-size: 4rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+/* New Request Item Styles */
+.request-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.request-item.pending {
+  border-left-color: var(--coral);
+}
+
+.request-item.playing {
+  border-left-color: var(--teal);
+  background: rgba(126, 206, 197, 0.15);
+}
+
+.request-item.played {
+  border-left-color: var(--gray-600);
+  opacity: 0.5;
+}
+
+.request-item.selected {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.request-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+}
+
+.request-status-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.request-thumb {
+  width: 48px;
+  height: 48px;
   border-radius: 0.5rem;
-  display: inline-block;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.request-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.request-song-name {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.request-artist-name {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.125rem;
+}
+
+.request-fan {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--teal-light);
+  background: rgba(126, 206, 197, 0.15);
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+}
+
+/* Action Panel */
+.request-actions-panel {
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.action-btn.now-playing {
+  background: var(--teal);
+  color: var(--gray-900);
+}
+
+.action-btn.now-playing:hover {
+  background: var(--teal-light);
+}
+
+.action-btn.mark-done {
+  background: var(--coral);
+  color: var(--white);
+}
+
+.action-btn.mark-done:hover {
+  background: var(--coral-light);
+}
+
+.action-btn.pending-again {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.action-btn.delete-btn {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6b6b;
+}
+
+.action-btn.delete-btn:hover {
+  background: rgba(255, 100, 100, 0.3);
 }
