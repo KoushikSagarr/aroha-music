@@ -12,19 +12,48 @@ import Venues from './components/Venues'
 import Live from './components/Live'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import Backstage from './components/Backstage'
 
 function App() {
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState('home')
 
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 2500)
+    // Simple hash-based routing
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1) // Remove the #
+      if (hash === 'backstage') {
+        setCurrentPage('backstage')
+        setLoading(false) // Skip loader for backstage
+      } else {
+        setCurrentPage('home')
+      }
+    }
 
-    return () => clearTimeout(timer)
+    // Check initial hash
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
+  useEffect(() => {
+    // Only show loader for home page, not backstage
+    if (currentPage === 'home' && loading) {
+      const timer = setTimeout(() => {
+        setLoading(false)
+      }, 2500)
+      return () => clearTimeout(timer)
+    }
+  }, [currentPage, loading])
+
+  // Backstage page (for band members)
+  if (currentPage === 'backstage') {
+    return <Backstage />
+  }
+
+  // Main website
   return (
     <>
       <CustomCursor />

@@ -1,5 +1,6 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback } from 'react'
+import { songRequestStore } from './Backstage'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
@@ -106,8 +107,17 @@ const Live = () => {
 
         setIsRequesting(true)
 
-        // Simulate request submission
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        // Add request to the store for backstage dashboard
+        songRequestStore.addRequest({
+            song: selectedSong?.title || songQuery,
+            artist: selectedSong?.artist || 'Custom Request',
+            album: selectedSong?.album || '',
+            artwork: selectedSong?.artwork || null,
+            fanName: fanName || 'Anonymous',
+        })
+
+        // Brief delay for UX
+        await new Promise((resolve) => setTimeout(resolve, 800))
 
         setIsRequesting(false)
         setRequestSuccess(true)
