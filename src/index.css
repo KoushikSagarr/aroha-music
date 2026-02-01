@@ -1628,7 +1628,15 @@ img {
   }
 
   .suggestions-dropdown {
-    max-height: 250px;
+    position: fixed !important;
+    top: auto !important;
+    bottom: 40vh !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    max-height: 40vh !important;
+    z-index: 999999 !important;
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
   }
 
   .suggestion-item {
