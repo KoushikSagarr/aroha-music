@@ -26,6 +26,7 @@ const useDebounce = (value, delay) => {
 
 const Live = () => {
     const ref = useRef(null)
+    const searchContainerRef = useRef(null)
     const isInView = useInView(ref, { once: true, margin: '-100px' })
 
     // Song Request State
@@ -94,6 +95,25 @@ const Live = () => {
             searchSongs(debouncedQuery)
         }
     }, [debouncedQuery, selectedSong, searchSongs])
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+                setShowDropdown(false)
+            }
+        }
+
+        if (showDropdown) {
+            document.addEventListener('touchstart', handleClickOutside)
+            document.addEventListener('mousedown', handleClickOutside)
+        }
+
+        return () => {
+            document.removeEventListener('touchstart', handleClickOutside)
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [showDropdown])
 
     const handleSongSelect = (song) => {
         setSelectedSong(song)
@@ -208,7 +228,7 @@ const Live = () => {
                         </p>
 
                         <form onSubmit={handleSongRequest} className="song-request-form">
-                            <div className="search-container">
+                            <div className="search-container" ref={searchContainerRef}>
                                 <div className="form-group">
                                     <input
                                         type="text"
@@ -220,7 +240,6 @@ const Live = () => {
                                         placeholder="Search for any song..."
                                         className="song-search-input"
                                         onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
-                                        onBlur={() => setTimeout(() => setShowDropdown(false), 500)}
                                     />
                                     <div className="search-icon">
                                         {isSearching ? (
