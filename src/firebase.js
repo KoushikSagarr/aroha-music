@@ -14,17 +14,31 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
+// Check if Firebase config is properly set
+const isConfigValid = firebaseConfig.apiKey && firebaseConfig.projectId
 
-// Initialize services
-export const db = getFirestore(app)
-
-// Analytics (only in browser)
+let app = null
+let db = null
 let analytics = null
-if (typeof window !== 'undefined') {
-    analytics = getAnalytics(app)
-}
-export { analytics }
 
+if (isConfigValid) {
+    try {
+        // Initialize Firebase
+        app = initializeApp(firebaseConfig)
+
+        // Initialize Firestore
+        db = getFirestore(app)
+
+        // Analytics (only in browser)
+        if (typeof window !== 'undefined') {
+            analytics = getAnalytics(app)
+        }
+    } catch (error) {
+        console.error('Firebase initialization error:', error)
+    }
+} else {
+    console.warn('Firebase config is missing. Please check your environment variables.')
+}
+
+export { db, analytics }
 export default app
