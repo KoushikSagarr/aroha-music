@@ -251,45 +251,45 @@ const Live = () => {
                                             </svg>
                                         )}
                                     </div>
-                                </div>
 
-                                <AnimatePresence>
-                                    {showDropdown && suggestions.length > 0 && (
-                                        <motion.div
-                                            className="suggestions-dropdown"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            transition={{ duration: 0.15 }}
-                                            onMouseDown={(e) => e.preventDefault()}
-                                        >
-                                            {suggestions.map((song) => (
-                                                <motion.button
-                                                    type="button"
-                                                    key={song.id}
-                                                    className="suggestion-item"
-                                                    onClick={() => handleSongSelect(song)}
-                                                    whileHover={{ backgroundColor: 'rgba(232, 168, 124, 0.1)' }}
-                                                >
-                                                    {song.artwork && (
-                                                        <img
-                                                            src={song.artwork}
-                                                            alt={song.title}
-                                                            className="suggestion-artwork"
-                                                        />
-                                                    )}
-                                                    <div className="suggestion-info">
-                                                        <span className="suggestion-title">{song.title}</span>
-                                                        <span className="suggestion-meta">
-                                                            {song.artist} {song.album !== 'Single' && `• ${song.album}`} {song.year && `(${song.year})`}
-                                                        </span>
-                                                    </div>
-                                                    <span className="suggestion-arrow">→</span>
-                                                </motion.button>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                    <AnimatePresence>
+                                        {showDropdown && suggestions.length > 0 && (
+                                            <motion.div
+                                                className="suggestions-dropdown"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 0.15 }}
+                                                onMouseDown={(e) => e.preventDefault()}
+                                            >
+                                                {suggestions.map((song) => (
+                                                    <motion.button
+                                                        type="button"
+                                                        key={song.id}
+                                                        className="suggestion-item"
+                                                        onClick={() => handleSongSelect(song)}
+                                                        whileHover={{ backgroundColor: 'rgba(232, 168, 124, 0.1)' }}
+                                                    >
+                                                        {song.artwork && (
+                                                            <img
+                                                                src={song.artwork}
+                                                                alt={song.title}
+                                                                className="suggestion-artwork"
+                                                            />
+                                                        )}
+                                                        <div className="suggestion-info">
+                                                            <span className="suggestion-title">{song.title}</span>
+                                                            <span className="suggestion-meta">
+                                                                {song.artist} {song.album !== 'Single' && `• ${song.album}`} {song.year && `(${song.year})`}
+                                                            </span>
+                                                        </div>
+                                                        <span className="suggestion-arrow">→</span>
+                                                    </motion.button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
 
                             <div className="form-group">
