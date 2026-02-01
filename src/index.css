@@ -3332,6 +3332,83 @@ img {
   margin: 0;
 }
 
+/* Admin Header Controls */
+.admin-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.live-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.live-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.live-toggle.is-live {
+  background: rgba(255, 59, 48, 0.2);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+}
+
+.live-indicator {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.live-toggle.is-live .toggle-switch {
+  background: #ff3b30;
+}
+
+.toggle-slider {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+}
+
+.live-toggle.is-live .toggle-slider {
+  transform: translateX(20px);
+}
+
+@keyframes pulse-live {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.live-toggle.is-live .live-indicator {
+  animation: pulse-live 1.5s ease-in-out infinite;
+}
+
 .pending-badge {
   background: var(--coral);
   padding: 0.375rem 0.875rem;
@@ -3910,6 +3987,43 @@ img {
 .gallery-empty .empty-hint {
   font-size: 0.9rem;
   color: var(--gray-500);
+}
+
+/* Marquee Scrolling Gallery */
+.marquee-container {
+  overflow: hidden;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+}
+
+.marquee-item {
+  position: relative;
+  flex-shrink: 0;
+  width: 300px;
+  height: 220px;
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease;
+}
+
+.marquee-item:hover {
+  transform: scale(1.05);
+}
+
+.marquee-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .gallery-grid {

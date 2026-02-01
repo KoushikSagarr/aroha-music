@@ -3,10 +3,22 @@ import { useRef, useState, useEffect } from 'react'
 import { db } from '../firebase'
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore'
 
+// Placeholder images for when Firestore is empty or has few photos
+const placeholderImages = [
+    { id: 'p1', url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80', caption: 'Live in Concert' },
+    { id: 'p2', url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80', caption: 'On Stage' },
+    { id: 'p3', url: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=600&q=80', caption: 'Acoustic Night' },
+    { id: 'p4', url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80', caption: 'Festival Vibes' },
+    { id: 'p5', url: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600&q=80', caption: 'Crowd Energy' },
+    { id: 'p6', url: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600&q=80', caption: 'Rock the Night' },
+    { id: 'p7', url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80', caption: 'Stage Lights' },
+    { id: 'p8', url: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&q=80', caption: 'Music Magic' },
+]
+
 const Gallery = () => {
     const ref = useRef(null)
     const isInView = useInView(ref, { once: true, margin: '-100px' })
-    const [photos, setPhotos] = useState([])
+    const [firestorePhotos, setFirestorePhotos] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedPhoto, setSelectedPhoto] = useState(null)
 
@@ -20,7 +32,7 @@ const Gallery = () => {
                 id: doc.id,
                 ...doc.data()
             }))
-            setPhotos(photoData)
+            setFirestorePhotos(photoData)
             setLoading(false)
         }, (error) => {
             console.error('Error fetching photos:', error)
@@ -30,20 +42,13 @@ const Gallery = () => {
         return () => unsubscribe()
     }, [])
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    }
+    // Combine Firestore photos with placeholders for marquee effect
+    const allPhotos = firestorePhotos.length > 0
+        ? [...firestorePhotos, ...placeholderImages.slice(0, Math.max(0, 8 - firestorePhotos.length))]
+        : placeholderImages
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 }
-    }
+    // Double the array for seamless infinite scroll
+    const marqueePhotos = [...allPhotos, ...allPhotos]
 
     return (
         <section className="gallery" id="gallery" ref={ref}>
@@ -66,41 +71,35 @@ const Gallery = () => {
                         <span className="loading-emoji">🎵</span>
                         <p>Loading photos...</p>
                     </div>
-                ) : photos.length === 0 ? (
-                    <motion.div
-                        className="gallery-empty"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
-                        <span className="empty-icon">📷</span>
-                        <p>No photos yet</p>
-                        <span className="empty-hint">Check back after our next show!</span>
-                    </motion.div>
                 ) : (
-                    <motion.div
-                        className="gallery-grid"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                    >
-                        {photos.map((photo) => (
-                            <motion.div
-                                key={photo.id}
-                                className="gallery-item"
-                                variants={itemVariants}
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => setSelectedPhoto(photo)}
-                            >
-                                <img src={photo.url} alt={photo.caption || 'Performance photo'} />
-                                {photo.caption && (
-                                    <div className="gallery-caption">
-                                        <p>{photo.caption}</p>
-                                    </div>
-                                )}
-                            </motion.div>
-                        ))}
-                    </motion.div>
+                    <div className="marquee-container">
+                        <motion.div
+                            className="marquee-track"
+                            animate={{ x: [0, '-50%'] }}
+                            transition={{
+                                x: {
+                                    duration: 30,
+                                    repeat: Infinity,
+                                    ease: 'linear'
+                                }
+                            }}
+                        >
+                            {marqueePhotos.map((photo, index) => (
+                                <div
+                                    key={`${photo.id}-${index}`}
+                                    className="marquee-item"
+                                    onClick={() => setSelectedPhoto(photo)}
+                                >
+                                    <img src={photo.url} alt={photo.caption || 'Performance photo'} />
+                                    {photo.caption && (
+                                        <div className="gallery-caption">
+                                            <p>{photo.caption}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </motion.div>
+                    </div>
                 )}
             </div>
 

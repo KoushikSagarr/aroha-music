@@ -11,7 +11,8 @@ import {
     query,
     orderBy,
     serverTimestamp,
-    Timestamp
+    Timestamp,
+    setDoc
 } from 'firebase/firestore'
 import CustomCursor from './CustomCursor'
 
@@ -57,12 +58,26 @@ const AdminPage = () => {
     const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
     const venueTimeoutRef = useRef(null)
 
+    // Live mode state
+    const [isLive, setIsLive] = useState(false)
+
     // Check if already logged in
     useEffect(() => {
         const session = sessionStorage.getItem('aroha_admin')
         if (session === 'true') {
             setIsLoggedIn(true)
         }
+    }, [])
+
+    // Subscribe to live status
+    useEffect(() => {
+        const settingsDoc = doc(db, 'settings', 'live')
+        const unsubscribe = onSnapshot(settingsDoc, (doc) => {
+            if (doc.exists()) {
+                setIsLive(doc.data().isLive || false)
+            }
+        })
+        return () => unsubscribe()
     }, [])
 
     // Subscribe to requests
@@ -137,6 +152,16 @@ const AdminPage = () => {
     const deleteRequest = async (id) => {
         await deleteDoc(doc(db, 'songRequests', id))
         setSelectedId(null)
+    }
+
+    // Toggle live mode
+    const toggleLive = async () => {
+        try {
+            await setDoc(doc(db, 'settings', 'live'), { isLive: !isLive })
+        } catch (error) {
+            console.error('Error toggling live mode:', error)
+            alert('Failed to toggle live mode')
+        }
     }
 
     // Photo upload using base64 (stored in Firestore directly)
@@ -393,9 +418,17 @@ const AdminPage = () => {
                 <div className="admin-title">
                     <h1>🎸 AROHA Dashboard</h1>
                 </div>
-                <button className="logout-btn" onClick={handleLogout}>
-                    Logout
-                </button>
+                <div className="admin-header-controls">
+                    <div className={`live-toggle ${isLive ? 'is-live' : ''}`} onClick={toggleLive}>
+                        <span className="live-indicator">{isLive ? '🔴 LIVE' : '⚪ OFFLINE'}</span>
+                        <div className="toggle-switch">
+                            <div className="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        Logout
+                    </button>
+                </div>
             </div>
 
             {/* Tabs */}
