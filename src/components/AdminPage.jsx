@@ -51,6 +51,12 @@ const AdminPage = () => {
     })
     const [editingEventId, setEditingEventId] = useState(null)
 
+    // Venue autocomplete state
+    const [venueSuggestions, setVenueSuggestions] = useState([])
+    const [venueLoading, setVenueLoading] = useState(false)
+    const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
+    const venueTimeoutRef = useRef(null)
+
     // Check if already logged in
     useEffect(() => {
         const session = sessionStorage.getItem('aroha_admin')
@@ -176,6 +182,49 @@ const AdminPage = () => {
     const deletePhoto = async (photo) => {
         if (!confirm('Delete this photo?')) return
         await deleteDoc(doc(db, 'photos', photo.id))
+    }
+
+    // Venue search using OpenStreetMap Nominatim API
+    const searchVenues = async (query) => {
+        if (query.length < 3) {
+            setVenueSuggestions([])
+            setShowVenueSuggestions(false)
+            return
+        }
+
+        setVenueLoading(true)
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`
+            )
+            const data = await response.json()
+            setVenueSuggestions(data.map(item => ({
+                name: item.display_name,
+                shortName: item.display_name.split(',').slice(0, 3).join(', ')
+            })))
+            setShowVenueSuggestions(true)
+        } catch (error) {
+            console.error('Venue search error:', error)
+        }
+        setVenueLoading(false)
+    }
+
+    const handleVenueChange = (value) => {
+        setEventForm({ ...eventForm, venue: value })
+
+        // Debounce venue search
+        if (venueTimeoutRef.current) {
+            clearTimeout(venueTimeoutRef.current)
+        }
+        venueTimeoutRef.current = setTimeout(() => {
+            searchVenues(value)
+        }, 300)
+    }
+
+    const handleVenueSelect = (venue) => {
+        setEventForm({ ...eventForm, venue: venue.shortName })
+        setShowVenueSuggestions(false)
+        setVenueSuggestions([])
     }
 
     // Event management
@@ -503,26 +552,49 @@ const AdminPage = () => {
                                     onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
                                     required
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="Venue"
-                                    value={eventForm.venue}
-                                    onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })}
-                                    required
-                                />
-                                <div className="form-row">
-                                    <input
-                                        type="date"
-                                        value={eventForm.date}
-                                        onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
-                                        required
-                                    />
+                                <div className="venue-input-wrapper">
                                     <input
                                         type="text"
-                                        placeholder="Time (e.g., 8:00 PM)"
-                                        value={eventForm.time}
-                                        onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
+                                        placeholder="Start typing venue/location..."
+                                        value={eventForm.venue}
+                                        onChange={(e) => handleVenueChange(e.target.value)}
+                                        onFocus={() => eventForm.venue.length >= 3 && setShowVenueSuggestions(true)}
+                                        onBlur={() => setTimeout(() => setShowVenueSuggestions(false), 200)}
+                                        required
                                     />
+                                    {venueLoading && <span className="venue-loading">⏳</span>}
+                                    {showVenueSuggestions && venueSuggestions.length > 0 && (
+                                        <div className="venue-suggestions">
+                                            {venueSuggestions.map((venue, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="venue-suggestion-item"
+                                                    onClick={() => handleVenueSelect(venue)}
+                                                >
+                                                    📍 {venue.shortName}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="form-row">
+                                    <div className="input-with-label">
+                                        <label>📅 Date</label>
+                                        <input
+                                            type="date"
+                                            value={eventForm.date}
+                                            onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-with-label">
+                                        <label>🕐 Time</label>
+                                        <input
+                                            type="time"
+                                            value={eventForm.time}
+                                            onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
                                 <textarea
                                     placeholder="Description (optional)"

@@ -3,6 +3,9 @@
    React + Vite Version
    ========================================================================== */
 
+/* Google Fonts - Inter for Admin Dashboard */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* CSS Custom Properties */
 :root {
   /* Primary Colors - Matching the logo */
@@ -3194,8 +3197,18 @@ img {
   min-height: 100vh;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
   color: var(--white);
-  font-family: var(--font-body);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.admin-page h1,
+.admin-page h2,
+.admin-page h3 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 /* Login Screen */
@@ -3792,6 +3805,77 @@ img {
 
 .event-admin-actions button:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Venue Autocomplete */
+.venue-input-wrapper {
+  position: relative;
+}
+
+.venue-loading {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+}
+
+.venue-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1e1e3f;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.venue-suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+
+.venue-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.venue-suggestion-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Input with Label */
+.input-with-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.input-with-label label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+/* Date/Time picker styling */
+.event-form input[type="date"],
+.event-form input[type="time"] {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.event-form input[type="date"]::-webkit-calendar-picker-indicator,
+.event-form input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 /* ===========================
