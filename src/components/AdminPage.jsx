@@ -140,41 +140,79 @@ const AdminPage = () => {
     }
 
     // Photo upload using base64 (stored in Firestore directly)
+    // Includes compression for larger images
+    const compressImage = (file, maxSizeKB = 800) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const img = new Image()
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    let { width, height } = img
+
+                    // Calculate new dimensions (max 1920px on longest side)
+                    const maxDimension = 1920
+                    if (width > height && width > maxDimension) {
+                        height = (height * maxDimension) / width
+                        width = maxDimension
+                    } else if (height > maxDimension) {
+                        width = (width * maxDimension) / height
+                        height = maxDimension
+                    }
+
+                    canvas.width = width
+                    canvas.height = height
+
+                    const ctx = canvas.getContext('2d')
+                    ctx.drawImage(img, 0, 0, width, height)
+
+                    // Compress with quality adjustment
+                    let quality = 0.8
+                    let result = canvas.toDataURL('image/jpeg', quality)
+
+                    // Reduce quality until under size limit
+                    while (result.length > maxSizeKB * 1024 && quality > 0.3) {
+                        quality -= 0.1
+                        result = canvas.toDataURL('image/jpeg', quality)
+                    }
+
+                    resolve(result)
+                }
+                img.onerror = reject
+                img.src = e.target.result
+            }
+            reader.onerror = reject
+            reader.readAsDataURL(file)
+        })
+    }
+
     const handlePhotoUpload = async (e) => {
         const file = e.target.files[0]
         if (!file) return
 
-        // Check file size (max 1MB for Firestore)
-        if (file.size > 1024 * 1024) {
-            alert('Photo must be under 1MB. Please compress or resize the image.')
+        // Check file size (max 5MB before compression)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Photo must be under 5MB')
             return
         }
 
         setUploading(true)
         try {
-            // Convert to base64
-            const reader = new FileReader()
-            reader.onloadend = async () => {
-                const base64Data = reader.result
+            // Compress image to fit Firestore limits
+            const compressedImage = await compressImage(file)
 
-                await addDoc(collection(db, 'photos'), {
-                    url: base64Data,
-                    caption: photoCaption || '',
-                    uploadedAt: serverTimestamp()
-                })
+            await addDoc(collection(db, 'photos'), {
+                url: compressedImage,
+                caption: photoCaption || '',
+                uploadedAt: serverTimestamp()
+            })
 
-                setPhotoCaption('')
-                fileInputRef.current.value = ''
-                setUploading(false)
-            }
-            reader.onerror = () => {
-                alert('Failed to read file')
-                setUploading(false)
-            }
-            reader.readAsDataURL(file)
+            setPhotoCaption('')
+            fileInputRef.current.value = ''
+            setUploading(false)
         } catch (error) {
             console.error('Upload error:', error)
-            alert('Failed to upload photo')
+            alert('Failed to upload photo: ' + error.message)
             setUploading(false)
         }
     }
