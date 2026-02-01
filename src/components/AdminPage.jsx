@@ -231,10 +231,20 @@ const AdminPage = () => {
     const handleEventSubmit = async (e) => {
         e.preventDefault()
         try {
+            // Convert 24h time format to 12h format for display
+            let displayTime = eventForm.time
+            if (eventForm.time) {
+                const [hours, minutes] = eventForm.time.split(':')
+                const hour = parseInt(hours)
+                const ampm = hour >= 12 ? 'PM' : 'AM'
+                const hour12 = hour % 12 || 12
+                displayTime = `${hour12}:${minutes} ${ampm}`
+            }
+
             const eventData = {
                 title: eventForm.title,
                 venue: eventForm.venue,
-                time: eventForm.time,
+                time: displayTime,
                 description: eventForm.description,
                 date: Timestamp.fromDate(new Date(eventForm.date))
             }
@@ -251,9 +261,10 @@ const AdminPage = () => {
             setEventForm({ title: '', venue: '', date: '', time: '', description: '' })
             setShowEventForm(false)
             setEditingEventId(null)
+            setVenueSuggestions([])
         } catch (error) {
             console.error('Event error:', error)
-            alert('Failed to save event')
+            alert('Failed to save event: ' + error.message)
         }
     }
 
