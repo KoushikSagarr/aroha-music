@@ -44,8 +44,8 @@ const Live = () => {
     const [customTip, setCustomTip] = useState('')
     const [showQR, setShowQR] = useState(false)
 
-    // Debounce search query
-    const debouncedQuery = useDebounce(songQuery, 400)
+    // Debounce search query - fast response
+    const debouncedQuery = useDebounce(songQuery, 200)
 
     // Search songs using iTunes API
     const searchSongs = useCallback(async (query) => {
