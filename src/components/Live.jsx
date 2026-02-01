@@ -220,7 +220,7 @@ const Live = () => {
                                         placeholder="Search for any song..."
                                         className="song-search-input"
                                         onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
-                                        onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
+                                        onBlur={() => setTimeout(() => setShowDropdown(false), 500)}
                                     />
                                     <div className="search-icon">
                                         {isSearching ? (
@@ -242,6 +242,7 @@ const Live = () => {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                             transition={{ duration: 0.15 }}
+                                            onMouseDown={(e) => e.preventDefault()}
                                         >
                                             {suggestions.map((song) => (
                                                 <motion.button
