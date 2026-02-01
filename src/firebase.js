@@ -3,14 +3,15 @@ import { getFirestore } from 'firebase/firestore'
 import { getAnalytics } from 'firebase/analytics'
 
 // Firebase configuration for AROHA Music
+// Uses environment variables for security
 const firebaseConfig = {
-    apiKey: "AIzaSyBsEJXTSh_yNeXgCbs2HpdBHYnXTvHids8",
-    authDomain: "aroha-music.firebaseapp.com",
-    projectId: "aroha-music",
-    storageBucket: "aroha-music.firebasestorage.app",
-    messagingSenderId: "871085207848",
-    appId: "1:871085207848:web:c9b6e32935a98effe3601d",
-    measurementId: "G-WZHK6CF9XK"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 }
 
 // Initialize Firebase
