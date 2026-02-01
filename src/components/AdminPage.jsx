@@ -13,7 +13,6 @@ import {
     serverTimestamp,
     Timestamp
 } from 'firebase/firestore'
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import CustomCursor from './CustomCursor'
 
 // Admin credentials - change these!
@@ -134,48 +133,49 @@ const AdminPage = () => {
         setSelectedId(null)
     }
 
-    // Photo upload
+    // Photo upload using base64 (stored in Firestore directly)
     const handlePhotoUpload = async (e) => {
         const file = e.target.files[0]
         if (!file) return
 
+        // Check file size (max 1MB for Firestore)
+        if (file.size > 1024 * 1024) {
+            alert('Photo must be under 1MB. Please compress or resize the image.')
+            return
+        }
+
         setUploading(true)
         try {
-            const storage = getStorage()
-            const fileName = `photos/${Date.now()}_${file.name}`
-            const storageRef = ref(storage, fileName)
+            // Convert to base64
+            const reader = new FileReader()
+            reader.onloadend = async () => {
+                const base64Data = reader.result
 
-            await uploadBytes(storageRef, file)
-            const url = await getDownloadURL(storageRef)
+                await addDoc(collection(db, 'photos'), {
+                    url: base64Data,
+                    caption: photoCaption || '',
+                    uploadedAt: serverTimestamp()
+                })
 
-            await addDoc(collection(db, 'photos'), {
-                url,
-                caption: photoCaption || '',
-                fileName,
-                uploadedAt: serverTimestamp()
-            })
-
-            setPhotoCaption('')
-            fileInputRef.current.value = ''
+                setPhotoCaption('')
+                fileInputRef.current.value = ''
+                setUploading(false)
+            }
+            reader.onerror = () => {
+                alert('Failed to read file')
+                setUploading(false)
+            }
+            reader.readAsDataURL(file)
         } catch (error) {
             console.error('Upload error:', error)
-            alert('Failed to upload photo. Make sure Firebase Storage is enabled.')
+            alert('Failed to upload photo')
+            setUploading(false)
         }
-        setUploading(false)
     }
 
     const deletePhoto = async (photo) => {
         if (!confirm('Delete this photo?')) return
-        try {
-            const storage = getStorage()
-            const photoRef = ref(storage, photo.fileName)
-            await deleteObject(photoRef)
-            await deleteDoc(doc(db, 'photos', photo.id))
-        } catch (error) {
-            console.error('Delete error:', error)
-            // Still delete from Firestore even if storage fails
-            await deleteDoc(doc(db, 'photos', photo.id))
-        }
+        await deleteDoc(doc(db, 'photos', photo.id))
     }
 
     // Event management
