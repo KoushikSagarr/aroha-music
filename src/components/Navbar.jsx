@@ -45,6 +45,8 @@ const Navbar = () => {
         { id: 'music', label: 'Music' },
         { id: 'venues', label: 'Venues' },
         { id: 'live', label: '🎤 Live' },
+        { id: 'gallery', label: '📸 Gallery' },
+        { id: 'events', label: '📅 Events' },
         { id: 'contact', label: 'Book Us' },
     ]
 

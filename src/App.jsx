@@ -10,6 +10,8 @@ import Band from './components/Band'
 import Music from './components/Music'
 import Venues from './components/Venues'
 import Live from './components/Live'
+import Gallery from './components/Gallery'
+import Events from './components/Events'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import AdminPage from './components/AdminPage'
@@ -71,6 +73,8 @@ function App() {
             <Music />
             <Venues />
             <Live />
+            <Gallery />
+            <Events />
             <Contact />
           </main>
           <Footer />
@@ -81,3 +85,4 @@ function App() {
 }
 
 export default App
+

@@ -9,6 +9,42 @@ const tipAmounts = [
     { value: 500, label: '₹500' },
 ]
 
+// Rate limiting constants
+const MAX_REQUESTS_PER_HOUR = 5
+const RATE_LIMIT_KEY = 'aroha_song_requests'
+
+// Rate limiting helper functions
+const getRequestHistory = () => {
+    try {
+        const data = localStorage.getItem(RATE_LIMIT_KEY)
+        if (!data) return []
+        return JSON.parse(data)
+    } catch {
+        return []
+    }
+}
+
+const cleanOldRequests = (requests) => {
+    const oneHourAgo = Date.now() - (60 * 60 * 1000)
+    return requests.filter(timestamp => timestamp > oneHourAgo)
+}
+
+const addRequestToHistory = () => {
+    const requests = cleanOldRequests(getRequestHistory())
+    requests.push(Date.now())
+    localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(requests))
+}
+
+const canMakeRequest = () => {
+    const requests = cleanOldRequests(getRequestHistory())
+    return requests.length < MAX_REQUESTS_PER_HOUR
+}
+
+const getRemainingRequests = () => {
+    const requests = cleanOldRequests(getRequestHistory())
+    return Math.max(0, MAX_REQUESTS_PER_HOUR - requests.length)
+}
+
 // Debounce helper
 const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value)
@@ -38,6 +74,8 @@ const Live = () => {
     const [requestSuccess, setRequestSuccess] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
     const [isSearching, setIsSearching] = useState(false)
+    const [remainingRequests, setRemainingRequests] = useState(getRemainingRequests())
+    const [rateLimitError, setRateLimitError] = useState(false)
 
     // Tip State
     const [selectedTip, setSelectedTip] = useState(null)
@@ -125,6 +163,13 @@ const Live = () => {
         e.preventDefault()
         if (!selectedSong && !songQuery) return
 
+        // Check rate limit
+        if (!canMakeRequest()) {
+            setRateLimitError(true)
+            setTimeout(() => setRateLimitError(false), 5000)
+            return
+        }
+
         setIsRequesting(true)
 
         try {
@@ -136,6 +181,10 @@ const Live = () => {
                 artwork: selectedSong?.artwork || null,
                 fanName: fanName || 'Anonymous',
             })
+
+            // Track request for rate limiting
+            addRequestToHistory()
+            setRemainingRequests(getRemainingRequests())
 
             setIsRequesting(false)
             setRequestSuccess(true)
@@ -335,6 +384,23 @@ const Live = () => {
                                     </>
                                 )}
                             </motion.button>
+
+                            {/* Rate limit info */}
+                            <div className="rate-limit-info">
+                                {rateLimitError ? (
+                                    <motion.p
+                                        className="rate-limit-error"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        ⏳ You've reached the limit! Try again in an hour.
+                                    </motion.p>
+                                ) : (
+                                    <p className="rate-limit-count">
+                                        {remainingRequests} request{remainingRequests !== 1 ? 's' : ''} remaining this hour
+                                    </p>
+                                )}
+                            </div>
                         </form>
                     </motion.div>
 
