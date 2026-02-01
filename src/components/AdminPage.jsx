@@ -69,8 +69,9 @@ const AdminPage = () => {
     }
 
     const handleLogout = () => {
-        setIsLoggedIn(false)
         sessionStorage.removeItem('aroha_admin')
+        // Redirect to landing page
+        window.location.href = window.location.origin
     }
 
     const updateStatus = async (id, status) => {
