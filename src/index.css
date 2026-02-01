@@ -1629,13 +1629,14 @@ img {
 
   .suggestions-dropdown {
     position: fixed !important;
-    top: auto !important;
-    bottom: 40vh !important;
+    top: 120px !important;
+    bottom: auto !important;
     left: 1rem !important;
     right: 1rem !important;
-    max-height: 40vh !important;
+    max-height: 45vh !important;
     z-index: 999999 !important;
-    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.3);
+    background: #ffffff !important;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3) !important;
     border-radius: 1rem;
   }
 
