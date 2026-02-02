@@ -155,7 +155,8 @@ const AdminPage = () => {
             // Auth state listener will handle the rest
         } catch (error) {
             console.error('Google Sign-In Error:', error)
-            setLoginError('Failed to sign in with Google.')
+            // Show detailed error to help with debugging (e.g., "auth/operation-not-allowed")
+            setLoginError(`Login Failed: ${error.message}`)
             setAuthLoading(false)
         }
     }
