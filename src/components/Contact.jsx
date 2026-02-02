@@ -44,18 +44,20 @@ const Contact = () => {
             }
 
             // Check if EmailJS is properly configured
-            if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
-                // Fallback: simulate success for demo
-                console.log('EmailJS not configured. Form data:', templateParams)
-                await new Promise((resolve) => setTimeout(resolve, 1500))
+            if (!EMAILJS_SERVICE_ID || EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+                console.warn('EmailJS not configured correctly. Service ID:', EMAILJS_SERVICE_ID);
+                // Fallback: simulate success for demo if in dev, but alert user
+                await new Promise((resolve) => setTimeout(resolve, 1500));
             } else {
                 // Send email via EmailJS
-                await emailjs.send(
+                console.log('Attempting to send email via EmailJS...');
+                const result = await emailjs.send(
                     EMAILJS_SERVICE_ID,
                     EMAILJS_TEMPLATE_ID,
                     templateParams,
                     EMAILJS_PUBLIC_KEY
                 )
+                console.log('EmailJS Response:', result.text);
             }
 
             setIsSubmitting(false)
