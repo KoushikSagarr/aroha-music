@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAnalytics } from 'firebase/analytics'
+import { getAuth } from 'firebase/auth'
 
 // Firebase configuration for AROHA Music
 // Uses environment variables for security
@@ -19,6 +20,7 @@ const isConfigValid = firebaseConfig.apiKey && firebaseConfig.projectId
 
 let app = null
 let db = null
+let auth = null
 let analytics = null
 
 if (isConfigValid) {
@@ -28,6 +30,7 @@ if (isConfigValid) {
 
         // Initialize Firestore
         db = getFirestore(app)
+        auth = getAuth(app)
 
         // Analytics (only in browser)
         if (typeof window !== 'undefined') {
@@ -40,5 +43,5 @@ if (isConfigValid) {
     console.warn('Firebase config is missing. Please check your environment variables.')
 }
 
-export { db, analytics }
+export { db, auth, analytics }
 export default app

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { db } from '../firebase'
+import { db, auth } from '../firebase'
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth'
 import {
     collection,
     onSnapshot,
@@ -15,18 +16,19 @@ import {
 } from 'firebase/firestore'
 import CustomCursor from './CustomCursor'
 
-// Admin credentials - change these!
-const ADMIN_CREDENTIALS = {
-    username: 'aroha',
-    password: 'music2024'
-}
+// Allowed Google Accounts for Admin Access
+const ALLOWED_EMAILS = [
+    'arohamusicofficial@gmail.com',
+    'koushiksagarr@gmail.com', // Adding some likely defaults based on repo name, can be edited
+    // Add your email here
+]
 
 const AdminPage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [user, setUser] = useState(null)
     const [loginError, setLoginError] = useState('')
     const [activeTab, setActiveTab] = useState('requests')
+    const [authLoading, setAuthLoading] = useState(true)
 
     // Requests state
     const [requests, setRequests] = useState([])
@@ -60,12 +62,27 @@ const AdminPage = () => {
     // Live mode state
     const [isLive, setIsLive] = useState(false)
 
-    // Check if already logged in
+    // Check Authentication Status
     useEffect(() => {
-        const session = sessionStorage.getItem('aroha_admin')
-        if (session === 'true') {
-            setIsLoggedIn(true)
-        }
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                if (ALLOWED_EMAILS.includes(currentUser.email)) {
+                    setUser(currentUser)
+                    setIsLoggedIn(true)
+                    setLoginError('')
+                } else {
+                    setUser(null)
+                    setIsLoggedIn(false)
+                    setLoginError(`Access denied: ${currentUser.email} is not authorized.`)
+                    signOut(auth)
+                }
+            } else {
+                setUser(null)
+                setIsLoggedIn(false)
+            }
+            setAuthLoading(false)
+        })
+        return () => unsubscribe()
     }, [])
 
     // Subscribe to live status
@@ -129,20 +146,27 @@ const AdminPage = () => {
         return () => unsubscribe()
     }, [isLoggedIn])
 
-    const handleLogin = (e) => {
-        e.preventDefault()
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            setIsLoggedIn(true)
-            sessionStorage.setItem('aroha_admin', 'true')
-            setLoginError('')
-        } else {
-            setLoginError('Invalid credentials')
+    const handleGoogleLogin = async () => {
+        setAuthLoading(true)
+        setLoginError('')
+        try {
+            const provider = new GoogleAuthProvider()
+            await signInWithPopup(auth, provider)
+            // Auth state listener will handle the rest
+        } catch (error) {
+            console.error('Google Sign-In Error:', error)
+            setLoginError('Failed to sign in with Google.')
+            setAuthLoading(false)
         }
     }
 
-    const handleLogout = () => {
-        sessionStorage.removeItem('aroha_admin')
-        window.location.href = window.location.origin
+    const handleLogout = async () => {
+        try {
+            await signOut(auth)
+            // Auth state listener will clear user state
+        } catch (error) {
+            console.error('Logout failed:', error)
+        }
     }
 
     const updateStatus = async (id, status) => {
@@ -354,30 +378,17 @@ const AdminPage = () => {
                     <div className="login-header">
                         <span className="login-icon">🎸</span>
                         <h1>AROHA Admin</h1>
-                        <p>Enter credentials to access dashboard</p>
+                        <p>Sign in with Google to access dashboard</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="login-form">
-                        <div className="login-field">
-                            <label>Username</label>
-                            <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter username"
-                                autoComplete="username"
-                            />
-                        </div>
+                    <div className="login-content">
+                        <button onClick={handleGoogleLogin} className="google-login-btn" disabled={authLoading}>
+                            {authLoading ? 'Signing In...' : 'Sign in with Google'}
+                        </button>
 
-                        <div className="login-field">
-                            <label>Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter password"
-                                autoComplete="current-password"
-                            />
+                        <div className="login-helper-text">
+                            <p>Access restricted to authorized accounts only.</p>
+                            <p className="email-hint">Allowed: {ALLOWED_EMAILS.map(e => e.split('@')[0]).join(', ')}</p>
                         </div>
 
                         {loginError && (
@@ -389,11 +400,7 @@ const AdminPage = () => {
                                 {loginError}
                             </motion.div>
                         )}
-
-                        <button type="submit" className="login-btn">
-                            Login
-                        </button>
-                    </form>
+                    </div>
                 </motion.div>
             </div>
         )
