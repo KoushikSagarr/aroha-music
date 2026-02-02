@@ -389,7 +389,6 @@ const AdminPage = () => {
 
                         <div className="login-helper-text">
                             <p>Access restricted to authorized accounts only.</p>
-                            <p className="email-hint">Allowed: {ALLOWED_EMAILS.map(e => e.split('@')[0]).join(', ')}</p>
                         </div>
 
                         {loginError && (
