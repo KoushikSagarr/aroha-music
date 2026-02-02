@@ -14,7 +14,6 @@ import {
     Timestamp,
     setDoc
 } from 'firebase/firestore'
-import CustomCursor from './CustomCursor'
 
 // Admin credentials - change these!
 const ADMIN_CREDENTIALS = {
@@ -296,20 +295,10 @@ const AdminPage = () => {
     const handleEventSubmit = async (e) => {
         e.preventDefault()
         try {
-            // Convert 24h time format to 12h format for display
-            let displayTime = eventForm.time
-            if (eventForm.time) {
-                const [hours, minutes] = eventForm.time.split(':')
-                const hour = parseInt(hours)
-                const ampm = hour >= 12 ? 'PM' : 'AM'
-                const hour12 = hour % 12 || 12
-                displayTime = `${hour12}:${minutes} ${ampm}`
-            }
-
             const eventData = {
                 title: eventForm.title,
                 venue: eventForm.venue,
-                time: displayTime,
+                time: eventForm.time || '',
                 description: eventForm.description,
                 date: Timestamp.fromDate(new Date(eventForm.date))
             }
@@ -356,7 +345,6 @@ const AdminPage = () => {
     if (!isLoggedIn) {
         return (
             <div className="admin-page">
-                <CustomCursor />
                 <motion.div
                     className="login-container"
                     initial={{ opacity: 0, y: 20 }}
@@ -413,7 +401,6 @@ const AdminPage = () => {
     // Admin Dashboard
     return (
         <div className="admin-page">
-            <CustomCursor />
 
             {/* Header */}
             <div className="admin-header">
@@ -674,7 +661,8 @@ const AdminPage = () => {
                                     <div className="input-with-label">
                                         <label>🕐 Time</label>
                                         <input
-                                            type="time"
+                                            type="text"
+                                            placeholder="e.g. 8:00 PM"
                                             value={eventForm.time}
                                             onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
                                         />

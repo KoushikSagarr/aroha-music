@@ -1,7 +1,7 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { db } from '../firebase'
-import { collection, onSnapshot, query, orderBy, where, Timestamp } from 'firebase/firestore'
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 const Events = () => {
     const ref = useRef(null)
@@ -9,24 +9,23 @@ const Events = () => {
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
 
-    // Fetch only future events from Firestore
+    // Fetch events from Firestore and filter future events client-side
     useEffect(() => {
         const eventsRef = collection(db, 'events')
-        const now = Timestamp.now()
-
-        // Query for future events only
-        const q = query(
-            eventsRef,
-            where('date', '>=', now),
-            orderBy('date', 'asc')
-        )
+        const q = query(eventsRef, orderBy('date', 'asc'))
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const eventData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                date: doc.data().date?.toDate() || new Date()
-            }))
+            const now = new Date()
+            now.setHours(0, 0, 0, 0) // Start of today
+
+            const eventData = snapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date?.toDate() || new Date()
+                }))
+                .filter(event => event.date >= now) // Filter future events
+
             setEvents(eventData)
             setLoading(false)
         }, (error) => {
