@@ -71,11 +71,13 @@ const AdminPage = () => {
 
     // Subscribe to live status
     useEffect(() => {
-        const settingsDoc = doc(db, 'settings', 'live')
-        const unsubscribe = onSnapshot(settingsDoc, (doc) => {
-            if (doc.exists()) {
-                setIsLive(doc.data().isLive || false)
+        const settingsRef = doc(db, 'settings', 'live')
+        const unsubscribe = onSnapshot(settingsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                setIsLive(snapshot.data().isLive || false)
             }
+        }, (error) => {
+            console.error('Live status subscription error:', error)
         })
         return () => unsubscribe()
     }, [])
