@@ -146,7 +146,8 @@ const Music = () => {
                                 >
                                     <div className="profile-icon">🎸</div>
                                     <div className="profile-info">
-                                        <span className="profile-name">AROHA Band</span>
+                                        <span className="profile-role">Official Band</span>
+                                        <span className="profile-name">AROHA Music</span>
                                         <span className="profile-handle">@aroha_music_</span>
                                     </div>
                                 </a>
@@ -158,6 +159,7 @@ const Music = () => {
                                 >
                                     <div className="profile-icon">🎤</div>
                                     <div className="profile-info">
+                                        <span className="profile-role">Lead Singer</span>
                                         <span className="profile-name">Mihira Ramana</span>
                                         <span className="profile-handle">@mihiraramana.music</span>
                                     </div>
