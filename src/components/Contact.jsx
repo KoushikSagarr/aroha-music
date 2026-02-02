@@ -107,8 +107,8 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <span className="contact-label">Email Us</span>
-                                    <a href="mailto:book@arohamusic.com" className="contact-value">
-                                        aroha.music01@gmail.com
+                                    <a href="mailto:aroha.music1@gmail.com" className="contact-value">
+                                        aroha.music1@gmail.com
                                     </a>
                                 </div>
                             </motion.div>
