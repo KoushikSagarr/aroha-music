@@ -19,7 +19,7 @@ import CustomCursor from './CustomCursor'
 
 // Allowed Google Accounts for Admin Access
 const ALLOWED_EMAILS = [
-    'arohamusicofficial@gmail.com',
+    'aroha.music1@gmail.com',
     'koushiksagarr@gmail.com',
     'mihiraramana@gmail.com',
     'Deepaksinha08@gmail.com',
