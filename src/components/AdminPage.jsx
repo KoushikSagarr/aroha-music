@@ -25,6 +25,37 @@ const ALLOWED_EMAILS = [
     'shravani.r@gmail.com'
 ]
 
+// Helper: Convert "8:00 PM" to "20:00" for input
+const formatTimeForInput = (timeStr) => {
+    if (!timeStr) return ''
+    if (!timeStr.toLowerCase().includes('m')) return timeStr // Already 24h or invalid
+
+    try {
+        const [time, modifier] = timeStr.split(' ')
+        let [hours, minutes] = time.split(':')
+        let h = parseInt(hours)
+        if (h === 12) h = 0
+        if (modifier === 'PM') h += 12
+        return `${h.toString().padStart(2, '0')}:${minutes}`
+    } catch (e) {
+        return timeStr
+    }
+}
+
+// Helper: Convert "20:00" to "8:00 PM" for display
+const formatTimeForDisplay = (timeStr) => {
+    if (!timeStr || timeStr.toLowerCase().includes('m')) return timeStr // Already 12h
+    try {
+        const [hours, minutes] = timeStr.split(':')
+        const h = parseInt(hours)
+        const ampm = h >= 12 ? 'PM' : 'AM'
+        const hour12 = h % 12 || 12
+        return `${hour12}:${minutes} ${ampm}`
+    } catch (e) {
+        return timeStr
+    }
+}
+
 const AdminPage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState(null)
@@ -325,7 +356,7 @@ const AdminPage = () => {
             const eventData = {
                 title: eventForm.title,
                 venue: eventForm.venue,
-                time: eventForm.time || '',
+                time: formatTimeForDisplay(eventForm.time),
                 description: eventForm.description,
                 date: Timestamp.fromDate(new Date(eventForm.date))
             }
@@ -354,7 +385,7 @@ const AdminPage = () => {
             title: event.title,
             venue: event.venue,
             date: event.date.toISOString().split('T')[0],
-            time: event.time || '',
+            time: formatTimeForInput(event.time),
             description: event.description || ''
         })
         setEditingEventId(event.id)
@@ -672,8 +703,7 @@ const AdminPage = () => {
                                     <div className="input-with-label">
                                         <label>🕐 Time</label>
                                         <input
-                                            type="text"
-                                            placeholder="e.g. 8:00 PM"
+                                            type="time"
                                             value={eventForm.time}
                                             onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
                                         />
