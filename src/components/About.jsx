@@ -99,7 +99,7 @@ const About = () => {
                                 whileHover={{ y: -5, scale: 1.02 }}
                             >
                                 <span className="stat-number">
-                                    <AnimatedCounter target={500} suffix="+" />
+                                    <AnimatedCounter target={200} suffix="+" />
                                 </span>
                                 <span className="stat-label">Live Shows</span>
                             </motion.div>
@@ -117,7 +117,7 @@ const About = () => {
                                 whileHover={{ y: -5, scale: 1.02 }}
                             >
                                 <span className="stat-number">
-                                    <AnimatedCounter target={100} suffix="K+" />
+                                    <AnimatedCounter target={10} suffix="k+" />
                                 </span>
                                 <span className="stat-label">Happy Fans</span>
                             </motion.div>

@@ -69,12 +69,12 @@ function App() {
           <main>
             <Hero />
             <About />
+            <Events />
             <Band />
             <Music />
             <Venues />
             <Live />
             <Gallery />
-            <Events />
             <Contact />
           </main>
           <Footer />
