@@ -9,61 +9,52 @@ const tracks = [
 
 const Music = () => {
     const ref = useRef(null)
+    const audioRef = useRef(null)
     const isInView = useInView(ref, { once: true, margin: '-100px' })
     const [isPlaying, setIsPlaying] = useState(false)
-    const [currentTrack, setCurrentTrack] = useState(0)
     const [progress, setProgress] = useState(0)
     const [currentTime, setCurrentTime] = useState('0:00')
+    const DURATION = 180 // approx 3 mins for placeholder
 
     useEffect(() => {
-        let interval
-        if (isPlaying) {
-            interval = setInterval(() => {
-                setProgress((prev) => {
-                    if (prev >= 100) {
-                        setCurrentTrack((t) => (t + 1) % tracks.length)
-                        return 0
-                    }
-                    return prev + 0.5
-                })
-            }, 500)
+        const audio = audioRef.current
+        if (!audio) return
+
+        const updateProgress = () => {
+            const current = audio.currentTime
+            const duration = audio.duration || DURATION
+            setProgress((current / duration) * 100)
+
+            const minutes = Math.floor(current / 60)
+            const seconds = Math.floor(current % 60)
+            setCurrentTime(`${minutes}:${seconds.toString().padStart(2, '0')}`)
         }
-        return () => clearInterval(interval)
-    }, [isPlaying])
 
-    useEffect(() => {
-        const totalSeconds = 225 // 3:45
-        const currentSeconds = Math.floor((progress / 100) * totalSeconds)
-        const minutes = Math.floor(currentSeconds / 60)
-        const seconds = currentSeconds % 60
-        setCurrentTime(`${minutes}:${seconds.toString().padStart(2, '0')}`)
-    }, [progress])
+        const handleEnded = () => setIsPlaying(false)
+
+        audio.addEventListener('timeupdate', updateProgress)
+        audio.addEventListener('ended', handleEnded)
+        return () => {
+            audio.removeEventListener('timeupdate', updateProgress)
+            audio.removeEventListener('ended', handleEnded)
+        }
+    }, [])
 
     const handlePlayPause = () => {
+        if (isPlaying) {
+            audioRef.current.pause()
+        } else {
+            audioRef.current.play()
+        }
         setIsPlaying(!isPlaying)
-    }
-
-    const handleTrackSelect = (index) => {
-        setCurrentTrack(index)
-        setProgress(0)
-        if (!isPlaying) setIsPlaying(true)
-    }
-
-    const handlePrev = () => {
-        setCurrentTrack((t) => (t - 1 + tracks.length) % tracks.length)
-        setProgress(0)
-    }
-
-    const handleNext = () => {
-        setCurrentTrack((t) => (t + 1) % tracks.length)
-        setProgress(0)
     }
 
     const handleProgressClick = (e) => {
         const rect = e.currentTarget.getBoundingClientRect()
         const clickX = e.clientX - rect.left
-        const newProgress = (clickX / rect.width) * 100
-        setProgress(newProgress)
+        const width = rect.width
+        const newTime = (clickX / width) * (audioRef.current.duration || DURATION)
+        audioRef.current.currentTime = newTime
     }
 
     return (
@@ -109,8 +100,8 @@ const Music = () => {
 
                     <div className="player-controls">
                         <div className="now-playing">
-                            <span className="track-title">{tracks[currentTrack].name}</span>
-                            <span className="track-artist">AROHA Music</span>
+                            <span className="track-title">Soothing Vibes</span>
+                            <span className="track-artist">AROHA Instrumentals</span>
                         </div>
 
                         <div className="progress-bar" onClick={handleProgressClick}>
@@ -121,22 +112,10 @@ const Music = () => {
                         </div>
                         <div className="time-display">
                             <span>{currentTime}</span>
-                            <span>{tracks[currentTrack].duration}</span>
+                            <span>{tracks[0].duration}</span>
                         </div>
 
-                        <div className="controls">
-                            <motion.button
-                                className="control-btn"
-                                onClick={handlePrev}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                aria-label="Previous"
-                            >
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
-                                </svg>
-                            </motion.button>
-
+                        <div className="controls center-controls">
                             <motion.button
                                 className="control-btn play-btn"
                                 onClick={handlePlayPause}
@@ -154,37 +133,44 @@ const Music = () => {
                                     </svg>
                                 )}
                             </motion.button>
-
-                            <motion.button
-                                className="control-btn"
-                                onClick={handleNext}
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                aria-label="Next"
-                            >
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-                                </svg>
-                            </motion.button>
                         </div>
 
-                        <div className="playlist">
-                            {tracks.map((track, index) => (
-                                <motion.button
-                                    key={track.id}
-                                    className={`track ${index === currentTrack ? 'active' : ''}`}
-                                    onClick={() => handleTrackSelect(index)}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
+                        <div className="social-profiles">
+                            <p className="social-cta">Follow us on Instagram</p>
+                            <div className="profiles-grid">
+                                <a
+                                    href="https://www.instagram.com/arohamusicofficial"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="profile-card"
                                 >
-                                    <span className="track-num">{String(index + 1).padStart(2, '0')}</span>
-                                    <span className="track-name">{track.name}</span>
-                                    <span className="track-duration">{track.duration}</span>
-                                </motion.button>
-                            ))}
+                                    <div className="profile-icon">🎸</div>
+                                    <div className="profile-info">
+                                        <span className="profile-name">AROHA Band</span>
+                                        <span className="profile-handle">@arohamusicofficial</span>
+                                    </div>
+                                </a>
+                                <a
+                                    href="https://www.instagram.com/shravani.r"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="profile-card"
+                                >
+                                    <div className="profile-icon">🎤</div>
+                                    <div className="profile-info">
+                                        <span className="profile-name">Shravani</span>
+                                        <span className="profile-handle">@shravani.r</span>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
+                <audio
+                    ref={audioRef}
+                    src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"
+                    loop
+                />
             </div>
         </section>
     )
