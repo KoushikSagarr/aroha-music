@@ -1893,6 +1893,12 @@ img {
   color: var(--coral);
 }
 
+.phone-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .social-follow {
   padding-top: 2rem;
   border-top: 1px solid var(--gray-200);
