@@ -126,8 +126,11 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <span className="contact-label">Call Us</span>
-                                    <a href="tel:+919999999999" className="contact-value">
-                                        +91 99999 99999
+                                    <a href="tel:+919182719956" className="contact-value">
+                                        +91 91827 19956
+                                    </a>
+                                    <a href="tel:+916304245679" className="contact-value">
+                                        +91 63042 45679
                                     </a>
                                 </div>
                             </motion.div>
