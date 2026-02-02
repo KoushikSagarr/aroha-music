@@ -3201,6 +3201,39 @@ img {
   padding: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: auto !important;
+  /* Restore cursor */
+}
+
+/* Restore cursor for all elements in admin page */
+.admin-page * {
+  cursor: auto !important;
+}
+
+/* Restore pointer for interactive elements */
+.admin-page button,
+.admin-page a,
+.admin-page input[type="submit"],
+.admin-page input[type="button"],
+.admin-page select,
+.admin-page .live-toggle,
+.admin-page .trash-icon,
+.admin-page .delete-btn,
+.admin-page .edit-btn,
+.admin-page .logout-btn,
+.admin-page .admin-tab,
+.admin-page .venue-suggestion-item {
+  cursor: pointer !important;
+}
+
+/* Restore text cursor for inputs */
+.admin-page input[type="text"],
+.admin-page input[type="password"],
+.admin-page input[type="email"],
+.admin-page input[type="date"],
+.admin-page input[type="time"],
+.admin-page textarea {
+  cursor: text !important;
 }
 
 .admin-page h1,
