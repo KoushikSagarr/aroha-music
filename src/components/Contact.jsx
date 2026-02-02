@@ -2,11 +2,10 @@ import { motion, useInView } from 'framer-motion'
 import { useRef, useState } from 'react'
 import emailjs from '@emailjs/browser'
 
-// EmailJS Configuration - Replace these with your actual values
-// Get them from https://www.emailjs.com/
-const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'  // Replace with your EmailJS service ID
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID' // Replace with your EmailJS template ID
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'   // Replace with your EmailJS public key
+// EmailJS Configuration
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 const Contact = () => {
     const ref = useRef(null)
@@ -41,7 +40,7 @@ const Contact = () => {
                 phone: formState.phone || 'Not provided',
                 event_type: formState.eventType,
                 message: formState.message,
-                to_email: 'band@arohamusic.com', // Replace with actual band email
+                to_email: 'aroha.music1@gmail.com', // Replace with actual band email
             }
 
             // Check if EmailJS is properly configured
