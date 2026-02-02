@@ -2,9 +2,9 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 
 const members = [
-    { id: 1, name: 'Member 1', role: 'Lead Vocals / Guitar', featured: false },
-    { id: 2, name: 'Member 2', role: 'Keyboards / Backup Vocals', featured: true },
-    { id: 3, name: 'Member 3', role: 'Bass / Percussion', featured: false },
+    { id: 1, name: 'Mihir Ramana', role: 'Lead Vocals', instagram: 'https://www.instagram.com/mihiraramana.music/' },
+    { id: 2, name: 'Sagar', role: 'Lead Guitarist', instagram: 'https://www.instagram.com/thestringssaga.live/' },
+    { id: 3, name: 'Shravani', role: 'Drums / Percussion', instagram: 'https://www.instagram.com/shravs28/' },
 ]
 
 const Band = () => {
@@ -48,7 +48,9 @@ const Band = () => {
                                 >
                                     <div className="social-links">
                                         <motion.a
-                                            href="#"
+                                            href={member.instagram}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="social-link"
                                             aria-label="Instagram"
                                             whileHover={{ y: -3, scale: 1.1 }}

@@ -139,7 +139,7 @@ const Music = () => {
                             <p className="social-cta">Follow us on Instagram</p>
                             <div className="profiles-grid">
                                 <a
-                                    href="https://www.instagram.com/arohamusicofficial"
+                                    href="https://www.instagram.com/aroha_music_/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="profile-card"
@@ -147,19 +147,19 @@ const Music = () => {
                                     <div className="profile-icon">🎸</div>
                                     <div className="profile-info">
                                         <span className="profile-name">AROHA Band</span>
-                                        <span className="profile-handle">@arohamusicofficial</span>
+                                        <span className="profile-handle">@aroha_music_</span>
                                     </div>
                                 </a>
                                 <a
-                                    href="https://www.instagram.com/shravani.r"
+                                    href="https://www.instagram.com/mihiraramana.music/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="profile-card"
                                 >
                                     <div className="profile-icon">🎤</div>
                                     <div className="profile-info">
-                                        <span className="profile-name">Shravani</span>
-                                        <span className="profile-handle">@shravani.r</span>
+                                        <span className="profile-name">Mihir Ramana</span>
+                                        <span className="profile-handle">@mihiraramana.music</span>
                                     </div>
                                 </a>
                             </div>
