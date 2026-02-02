@@ -48,14 +48,6 @@ This isn't just a static brochure; it's an interactive application designed with
 
 ---
 
-## 📸 Snapshots
-
-| **Hero Section** | **Vinyl Player** |
-|:---:|:---:|
-| <img src="public/logo.jpg" width="400" alt="Hero Placeholder" /> | <img src="public/logo.jpg" width="400" alt="Player Placeholder" /> |
-
----
-
 ## 🚀 Quick Start
 
 Get the local environment spinning in seconds.
