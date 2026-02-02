@@ -136,7 +136,7 @@ const Music = () => {
                         </div>
 
                         <div className="social-profiles">
-                            <p className="social-cta">Follow us on Instagram</p>
+                            <p className="social-cta">Listen & Connect</p>
                             <div className="profiles-grid">
                                 <a
                                     href="https://www.instagram.com/aroha_music_/"
