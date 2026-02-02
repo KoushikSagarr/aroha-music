@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { addSongRequest } from '../services/songService'
 import { db } from '../firebase'
 import { doc, onSnapshot } from 'firebase/firestore'
+import upiQrImg from '../assets/upi-qr.jpg'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
@@ -527,16 +528,32 @@ const Live = () => {
                                     exit={{ height: 0, opacity: 0 }}
                                     transition={{ duration: 0.3 }}
                                 >
-                                    <div className="qr-placeholder">
+                                    <div className="qr-container">
                                         <div className="qr-box">
-                                            <svg viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
-                                                <rect x="3" y="3" width="7" height="7" />
-                                                <rect x="14" y="3" width="7" height="7" />
-                                                <rect x="3" y="14" width="7" height="7" />
-                                                <path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 17h3v4h-3zM17 14h4v3h-4z" />
-                                            </svg>
-                                            <p>QR Code Coming Soon</p>
-                                            <span>UPI ID will be added here</span>
+                                            <img
+                                                src={upiQrImg}
+                                                alt="Tip via UPI"
+                                                className="upi-qr-image"
+                                            />
+                                        </div>
+                                        <div className="upi-details">
+                                            <p className="upi-label">UPI ID:</p>
+                                            <div className="upi-id-box">
+                                                <span className="upi-id">9182719956@pthdfc</span>
+                                                <button
+                                                    className="copy-btn"
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText('9182719956@pthdfc')
+                                                        alert('UPI ID copied to clipboard!')
+                                                    }}
+                                                    aria-label="Copy UPI ID"
+                                                >
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
