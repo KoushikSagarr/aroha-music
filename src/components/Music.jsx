@@ -158,7 +158,7 @@ const Music = () => {
                                 >
                                     <div className="profile-icon">🎤</div>
                                     <div className="profile-info">
-                                        <span className="profile-name">Mihir Ramana</span>
+                                        <span className="profile-name">Mihira Ramana</span>
                                         <span className="profile-handle">@mihiraramana.music</span>
                                     </div>
                                 </a>
