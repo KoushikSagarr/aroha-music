@@ -1,6 +1,8 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { addSongRequest } from '../services/songService'
+import { db } from '../firebase'
+import { doc, onSnapshot } from 'firebase/firestore'
 
 const tipAmounts = [
     { value: 50, label: '₹50' },
@@ -76,11 +78,24 @@ const Live = () => {
     const [isSearching, setIsSearching] = useState(false)
     const [remainingRequests, setRemainingRequests] = useState(getRemainingRequests())
     const [rateLimitError, setRateLimitError] = useState(false)
+    const [isLive, setIsLive] = useState(true) // Default to true, will update from Firestore
+    const [notLiveError, setNotLiveError] = useState(false)
 
     // Tip State
     const [selectedTip, setSelectedTip] = useState(null)
     const [customTip, setCustomTip] = useState('')
     const [showQR, setShowQR] = useState(false)
+
+    // Subscribe to live status from Firestore
+    useEffect(() => {
+        const settingsRef = doc(db, 'settings', 'live')
+        const unsubscribe = onSnapshot(settingsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                setIsLive(snapshot.data().isLive || false)
+            }
+        })
+        return () => unsubscribe()
+    }, [])
 
     // Debounce search query - fast response
     const debouncedQuery = useDebounce(songQuery, 200)
@@ -162,6 +177,13 @@ const Live = () => {
     const handleSongRequest = async (e) => {
         e.preventDefault()
         if (!selectedSong && !songQuery) return
+
+        // Check if band is live
+        if (!isLive) {
+            setNotLiveError(true)
+            setTimeout(() => setNotLiveError(false), 5000)
+            return
+        }
 
         // Check rate limit
         if (!canMakeRequest()) {
@@ -387,7 +409,15 @@ const Live = () => {
 
                             {/* Rate limit info */}
                             <div className="rate-limit-info">
-                                {rateLimitError ? (
+                                {notLiveError ? (
+                                    <motion.p
+                                        className="rate-limit-error"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        🎸 We're not live currently! Check back during our next show.
+                                    </motion.p>
+                                ) : rateLimitError ? (
                                     <motion.p
                                         className="rate-limit-error"
                                         initial={{ opacity: 0, y: -10 }}
@@ -395,6 +425,10 @@ const Live = () => {
                                     >
                                         ⏳ You've reached the limit! Try again in an hour.
                                     </motion.p>
+                                ) : !isLive ? (
+                                    <p className="rate-limit-count" style={{ color: '#e74c3c' }}>
+                                        🔴 Band is currently offline
+                                    </p>
                                 ) : (
                                     <p className="rate-limit-count">
                                         {remainingRequests} request{remainingRequests !== 1 ? 's' : ''} remaining this hour
