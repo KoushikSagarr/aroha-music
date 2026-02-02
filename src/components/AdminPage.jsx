@@ -19,8 +19,10 @@ import CustomCursor from './CustomCursor'
 // Allowed Google Accounts for Admin Access
 const ALLOWED_EMAILS = [
     'arohamusicofficial@gmail.com',
-    'koushiksagarr@gmail.com', // Adding some likely defaults based on repo name, can be edited
-    // Add your email here
+    'koushiksagarr@gmail.com',
+    'mihiraramana@gmail.com',
+    'Deepaksinha08@gmail.com',
+    'shravani.r@gmail.com'
 ]
 
 const AdminPage = () => {
