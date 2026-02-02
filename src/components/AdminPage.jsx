@@ -12,7 +12,8 @@ import {
     query,
     orderBy,
     serverTimestamp,
-    setDoc
+    setDoc,
+    Timestamp
 } from 'firebase/firestore'
 import CustomCursor from './CustomCursor'
 
