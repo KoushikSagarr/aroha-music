@@ -41,12 +41,12 @@ const Navbar = () => {
     const navItems = [
         { id: 'home', label: 'Home' },
         { id: 'about', label: 'About' },
-        { id: 'events', label: '📅 Events' },
+        { id: 'events', label: ' Events' },
         { id: 'band', label: 'The Band' },
         { id: 'music', label: 'Music' },
         { id: 'venues', label: 'Venues' },
-        { id: 'live', label: '🎤 Live' },
-        { id: 'gallery', label: '📸 Gallery' },
+        { id: 'live', label: ' Live' },
+        { id: 'gallery', label: ' Gallery' },
         { id: 'contact', label: 'Book Us' },
     ]
 
