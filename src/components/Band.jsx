@@ -2,7 +2,7 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 
 const members = [
-    { id: 1, name: 'Mihir Ramana', role: 'Lead Vocals', instagram: 'https://www.instagram.com/mihiraramana.music/' },
+    { id: 1, name: 'Mihira Ramana', role: 'Lead Vocals', instagram: 'https://www.instagram.com/mihiraramana.music/' },
     { id: 2, name: 'Deepak', role: 'Lead Guitarist', instagram: 'https://www.instagram.com/thestringsaga.live/' },
     { id: 3, name: 'Shravani', role: 'Drums / Percussion', instagram: 'https://www.instagram.com/shravs28/' },
 ]
